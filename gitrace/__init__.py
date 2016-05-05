@@ -16,3 +16,6 @@ A utility for extracting file access traces from Git repositories
 ##########################################################################
 ## Imports
 ##########################################################################
+
+from .extract import TraceExtractor
+from .repo import RepoManager

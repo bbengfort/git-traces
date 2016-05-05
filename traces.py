@@ -19,11 +19,8 @@ The console utility for executing git-traces commands.
 ##########################################################################
 
 import sys
-import csv
 import gitrace
 import argparse
-
-from gitrace.repo import RepoManager
 
 ##########################################################################
 ## Module Constants
@@ -51,16 +48,21 @@ def create_parser(**kwargs):
         ('-o', '--outpath'): {
             'metavar': 'PATH',
             'default': sys.stdout,
-            'type': argparse.FileType('w'),
-            'help': 'location to write the trace to',
+            'type': argparse.FileType('a'),
+            'help': 'location to append the traces to',
         },
         ('-b', '--branch'): {
             'default': 'master',
             'help': 'the branch to list commits from'
         },
+        ('-H', '--header'): {
+            'action': 'store_true',
+            'default': False,
+            'help': 'write a header row to the trace file.',
+        },
         'repos': {
             'metavar': 'repo',
-            'nargs': 1,
+            'nargs': '+',
             'help': 'path to repository to extract trace from'
         },
     }
@@ -80,16 +82,13 @@ def main(*args):
     """
     parser  = create_parser()
     options = parser.parse_args()
-    fields  = ['commit', 'author', 'object', 'timestamp', 'lines', 'insertions', 'deletions']
-    writer  = csv.DictWriter(options.outpath, fieldnames=fields)
-    writer.writeheader()
 
     try:
-        repo    = RepoManager(options.repos[0], options.branch)
-        for version in repo.versions():
-            writer.writerow(version)
+        extractor = gitrace.TraceExtractor(options.outpath, header=options.header)
+        extractor.extract(options.repos, options.branch)
     except Exception as e:
         parser.error(str(e))
+
 
 if __name__ == '__main__':
     main(*sys.argv[1:])
