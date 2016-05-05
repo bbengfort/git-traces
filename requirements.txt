@@ -1,0 +1,11 @@
+
+## Utilities
+six==1.10.0
+python-dateutil==2.5.3
+
+## Pip stuff
+#Python==2.7.10
+#pip==8.1.1
+#setuptools==21.0.0
+#wheel==0.29.0
+#wsgiref==0.1.2
